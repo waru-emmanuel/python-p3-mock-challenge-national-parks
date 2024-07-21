@@ -1,61 +1,108 @@
 class NationalPark:
-    
+    all_parks = []
+
     def __init__(self, name):
-        self.name = name
-        self._trips = []  # List to store trips related to this park
-    
-    def add_trip(self, trip):
-        self._trips.append(trip)  # Method to add a trip to the park
-    
+        if not isinstance(name, str) or len(name) <= 3:
+            raise Exception("Name must be a string longer than 3 characters")
+        self._name = name
+        self.trips_list = []
+        NationalPark.all_parks.append(self)
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, new_name):
+        raise Exception("Cannot change the name of the national park")
+
     def trips(self):
-        return self._trips  # Return the list of trips
-    
+        return self.trips_list
+
     def visitors(self):
-        # Return a set of unique visitors to the park
-        return set(trip.visitor for trip in self._trips)
-    
+        return list({trip.visitor for trip in self.trips_list})
+
     def total_visits(self):
-        # Return the total number of trips to the park
-        return len(self._trips)
-    
+        return len(self.trips_list)
+
     def best_visitor(self):
-        # Find the visitor with the most visits to the park
-        from collections import Counter
-        visitor_counter = Counter(trip.visitor for trip in self._trips)
-        if visitor_counter:
-            return visitor_counter.most_common(1)[0][0]
-        return None
+        visitors_count = {}
+        for trip in self.trips_list:
+            if trip.visitor in visitors_count:
+                visitors_count[trip.visitor] += 1
+            else:
+                visitors_count[trip.visitor] = 1
+        return max(visitors_count, key=visitors_count.get)
 
-
-class Trip:
-    
-    def __init__(self, visitor, national_park, start_date, end_date):
-        self.visitor = visitor
-        self.national_park = national_park
-        self.start_date = start_date
-        self.end_date = end_date
-        
-        # Add the trip to the visitor and national park
-        visitor.add_trip(self)
-        national_park.add_trip(self)
-
+    @classmethod
+    def most_visited(cls):
+        most_visited_park = max(cls.all_parks, key=lambda park: len(park.trips_list))
+        return most_visited_park
 
 class Visitor:
-    
     def __init__(self, name):
-        self.name = name
-        self._trips = []  # List to store trips related to this visitor
-    
-    def add_trip(self, trip):
-        self._trips.append(trip)  # Method to add a trip to the visitor
-    
+        if not isinstance(name, str) or not (1 <= len(name) <= 15):
+            raise Exception("Name must be a string between 1 and 15 characters")
+        self._name = name
+        self.trips_list = []
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, new_name):
+        if not isinstance(new_name, str) or not (1 <= len(new_name) <= 15):
+            raise Exception("Name must be a string between 1 and 15 characters")
+        self._name = new_name
+
     def trips(self):
-        return self._trips  # Return the list of trips
-    
+        return self.trips_list
+
     def national_parks(self):
-        # Return a set of unique national parks visited by the visitor
-        return set(trip.national_park for trip in self._trips)
-    
+        return list({trip.national_park for trip in self.trips_list})
+
     def total_visits_at_park(self, park):
-        # Return the total number of trips the visitor has made to a specific park
-        return sum(1 for trip in self._trips if trip.national_park == park)
+        return sum(1 for trip in self.trips_list if trip.national_park == park)
+
+class Trip:
+    all = []
+
+    def __init__(self, visitor, national_park, start_date, end_date):
+        if not isinstance(start_date, str) or not isinstance(end_date, str):
+            raise Exception("Dates must be strings in the format 'MMM DDth'")
+        self._visitor = visitor
+        self._national_park = national_park
+        self._start_date = start_date
+        self._end_date = end_date
+        visitor.trips_list.append(self)
+        national_park.trips_list.append(self)
+        Trip.all.append(self)
+
+    @property
+    def start_date(self):
+        return self._start_date
+
+    @start_date.setter
+    def start_date(self, new_start_date):
+        if not isinstance(new_start_date, str):
+            raise Exception("Start date must be a string in the format 'MMM DDth'")
+        self._start_date = new_start_date
+
+    @property
+    def end_date(self):
+        return self._end_date
+
+    @end_date.setter
+    def end_date(self, new_end_date):
+        if not isinstance(new_end_date, str):
+            raise Exception("End date must be a string in the format 'MMM DDth'")
+        self._end_date = new_end_date
+
+    @property
+    def visitor(self):
+        return self._visitor
+
+    @property
+    def national_park(self):
+        return self._national_park

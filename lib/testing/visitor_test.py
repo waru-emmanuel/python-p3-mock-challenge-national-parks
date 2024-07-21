@@ -41,8 +41,8 @@ class TestVisitor:
         #assert vis.name == "Poppy"
 
         # comment out the next two lines if using Exceptions
-        vis.name = ""
-        assert vis.name == "Poppy"
+        #vis.name = ""
+        #assert vis.name == "Poppy"
 
         # uncomment the next two lines if using Exceptions
         with pytest.raises(Exception):
