@@ -69,8 +69,8 @@ class Trip:
     all = []
 
     def __init__(self, visitor, national_park, start_date, end_date):
-        if not isinstance(start_date, str) or not isinstance(end_date, str):
-            raise Exception("Dates must be strings in the format 'MMM DDth'")
+        self.validate_date_format(start_date)
+        self.validate_date_format(end_date)
         self._visitor = visitor
         self._national_park = national_park
         self._start_date = start_date
@@ -79,14 +79,17 @@ class Trip:
         national_park.trips_list.append(self)
         Trip.all.append(self)
 
+    def validate_date_format(self, date):
+        if not isinstance(date, str) or not date.endswith("th") or len(date.split()) != 2:
+            raise Exception("Dates must be strings in the format 'MMMDDth'")
+
     @property
     def start_date(self):
         return self._start_date
 
     @start_date.setter
     def start_date(self, new_start_date):
-        if not isinstance(new_start_date, str):
-            raise Exception("Start date must be a string in the format 'MMM DDth'")
+        self.validate_date_format(new_start_date)
         self._start_date = new_start_date
 
     @property
@@ -95,8 +98,7 @@ class Trip:
 
     @end_date.setter
     def end_date(self, new_end_date):
-        if not isinstance(new_end_date, str):
-            raise Exception("End date must be a string in the format 'MMM DDth'")
+        self.validate_date_format(new_end_date)
         self._end_date = new_end_date
 
     @property
